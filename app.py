@@ -2,10 +2,29 @@ import streamlit as st
 import pickle
 import pandas as pd
 import requests
+import requests
+import time
+
 def fetch_posters(movie_id):
-    response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac178da84d2e8&language=en-US'.format(movie_id))
-    data = response.json()
-    return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
+    try:
+        time.sleep(0.2)
+
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=3d3811aad6cfd0d19fc22f614cfb2ed2&language=en-US"
+        response = requests.get(url, timeout=5)
+
+        if response.status_code != 200:
+            return "https://via.placeholder.com/500x750?text=No+Poster"
+
+        data = response.json()
+
+        if "poster_path" not in data or data["poster_path"] is None:
+            return "https://via.placeholder.com/500x750?text=No+Poster"
+
+        return "https://image.tmdb.org/t/p/w500/" + data["poster_path"]
+
+    except:
+        return "https://via.placeholder.com/500x750?text=Error"
+
 
 
 similarities = pickle.load(open('code\\similarity.pkl', 'rb'))
